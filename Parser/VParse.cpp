@@ -39,7 +39,7 @@ VParseGrammar*	VParseGrammar::s_grammarp = NULL;
 //*************************************************************************
 
 VParse::VParse(VFileLine* filelinep, av* symsp,
-	       bool sigParser, bool useUnreadbackFlag, bool useProtected, bool usePinselects)
+	       bool sigParser, bool useUnreadbackFlag, bool useProtected, bool usePinselects, bool inferMissingTypes)
     : m_syms(filelinep, symsp)
 {
     m_inFilelinep = filelinep;
@@ -47,6 +47,7 @@ VParse::VParse(VFileLine* filelinep, av* symsp,
     m_useUnreadback = useUnreadbackFlag;
     m_useProtected = useProtected;
     m_usePinselects = usePinselects;
+    m_inferMissingTypes = inferMissingTypes;
     m_debug = 0;
     m_lexp = new VParseLex(this);
     m_grammarp = new VParseGrammar(this);

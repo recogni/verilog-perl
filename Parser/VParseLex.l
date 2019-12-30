@@ -727,17 +727,25 @@ int VParseLex::lexToken(VParseBisonYYSType* yylvalp) {
     // Fetch next token from prefetch or real lexer
     s_currentLexp = this;
     int token;
-    if (m_ahead) {
+    int prevtok = LEXP->prevLexToken();
+    if (m_aheadCount) {
 	// We prefetched an extra token, give it back
-	m_ahead = false;
-	token = m_aheadToken;
-	*yylvalp = m_aheadVal;
+	m_aheadCount--;
+	token = m_aheadToken[0];
+	*yylvalp = m_aheadVal[0];
+	for (int i=0; i<m_aheadCount; i++) {
+	    m_aheadToken[i] = m_aheadToken[i+1];
+	    m_aheadVal[i] = m_aheadVal[i+1];
+	}
+	m_prevLexToken = token;
     } else {
 	// Parse new token
 	s_yylvalp = yylvalp;  // Read by yylex()
 	token = yylexReadTok();
     }
+
     // If a paren, read another
+    VParseBisonYYSType curValue = *s_yylvalp;  // Remember value, as about to read ahead
     if (token == '('
 	|| token == yCONST__LEX
 	|| token == yGLOBAL__LEX
@@ -751,12 +759,17 @@ int VParseLex::lexToken(VParseBisonYYSType* yylvalp) {
 #ifdef FLEX_DEBUG
 	if (yy_flex_debug) { cout<<"   lexToken: reading ahead to find possible strength"<<endl; }
 #endif
-	VParseBisonYYSType curValue = *s_yylvalp;  // Remember value, as about to read ahead
-	int nexttok = yylexReadTok();
-	m_ahead = true;
-	m_aheadToken = nexttok;
-	m_aheadVal = *s_yylvalp;
-	*s_yylvalp = curValue;
+	int nexttok;
+	if (!m_aheadCount) {
+	    nexttok = yylex();
+	    m_aheadCount = 1;
+	    m_aheadToken[0] = nexttok;
+	    m_aheadVal[0] = *s_yylvalp;
+	    *s_yylvalp = curValue;
+	}
+	else {
+	    nexttok = m_aheadToken[0];
+	}
 	// Now potentially munge the current token
 	if (token == '(' && (nexttok == ygenSTRENGTH
 			     || nexttok == ySUPPLY0
@@ -849,7 +862,56 @@ int VParseLex::lexToken(VParseBisonYYSType* yylvalp) {
 	    case VAstType::TYPE:	token = yaID__aTYPE;	    break;
 	    default:			token = yaID__ETC;	    break;
 	    }
-	} else {  // Not found
+	}
+	else if (LPARSEP->inferMissingTypes()) {
+	    while (m_aheadCount < 2) {
+		m_aheadToken[m_aheadCount] = yylex();
+		m_aheadVal[m_aheadCount] = *s_yylvalp;
+		m_aheadCount++;
+		*s_yylvalp = curValue;
+	    }
+
+	    if (m_aheadToken[0] == yP_COLONCOLON) {
+		LPARSEP->symPushNew(VAstType::PACKAGE, s_yylvalp->str);
+		LPARSEP->symPopScope(VAstType::PACKAGE);
+		token = yaID__aPACKAGE;
+	    }
+	    else if ((m_aheadToken[0] == yaID__LEX && m_aheadToken[1] != '(') || m_aheadToken[0] == '[') {
+		if (prevtok == '('
+		    || prevtok == ','
+		    || prevtok == ';'
+		    || prevtok == '{'
+		    || prevtok == yBEGIN
+		    || prevtok == yEND
+		    || prevtok == yINOUT
+		    || prevtok == yINPUT
+		    || prevtok == yOUTPUT
+		    || prevtok == yWIRE
+		    || prevtok == yP_COLONCOLON) {
+		    if (m_aheadToken[0] == '[') {
+			for (int i=1; i<k_aheadLimit-1; i++) {
+			    if ((i+1) >= m_aheadCount) {
+				m_aheadToken[m_aheadCount] = yylex();
+				m_aheadVal[m_aheadCount] = *s_yylvalp;
+				m_aheadCount++;
+				*s_yylvalp = curValue;
+			    }
+
+			    if (m_aheadToken[i] == ']') {
+				if (m_aheadToken[i+1] == yaID__LEX) {
+				    token = yaID__aTYPE;
+				}
+				break;
+			    }
+			}
+		    } else {
+			token = yaID__aTYPE;
+		    }
+		}
+	    }
+	}
+
+	if (token == yaID__LEX) {
 	    token = yaID__ETC;
 	}
     }

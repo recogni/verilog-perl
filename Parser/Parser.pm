@@ -60,6 +60,7 @@ sub new {
 		use_protected => 1,   # Backward compatibility
 		use_pinselects => 0,   # Backward compatibility
 		use_std => undef,	# Undef = silent
+		infer_missing_types => 0,
 		#use_cb_{callback-name} => 0/1
 		#
 		#_debug		# Don't set, use debug() accessor to change level
@@ -74,6 +75,7 @@ sub new {
 		$self->{use_unreadback},
 		$self->{use_protected},
 		$self->{use_pinselects},  # Undocumented as for use in SigParser only
+		$self->{infer_missing_types},
 		);
 
     $self->{use_cb_contassign} = $self->{use_vars} if !exists $self->{use_cb_contassign};

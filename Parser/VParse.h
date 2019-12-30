@@ -67,6 +67,7 @@ private:
     bool	m_useUnreadback;///< Need m_unreadback tracking
     bool	m_useProtected;	///< Need `protected tracking
     bool	m_usePinselects;///< Need bit-select parsing
+    bool	m_inferMissingTypes;
     string	m_unreadback;	///< Otherwise unprocessed whitespace before current token
     deque<string> m_buffers;	///< Buffer of characters to process
 
@@ -123,7 +124,7 @@ private:
 public:
     // CONSTRUCTORS
     VParse(VFileLine* filelinep, av* symsp,
-	   bool sigParser, bool useUnreadbackFlag, bool useProtected, bool usePinselects);
+	   bool sigParser, bool useUnreadbackFlag, bool useProtected, bool usePinselects, bool inferMissingTypes);
     virtual ~VParse();
 
     // ACCESSORS
@@ -138,6 +139,7 @@ public:
     bool callbackMasterEna() const { return m_callbackMasterEna; }
     bool useProtected() const { return m_useProtected; }
     bool usePinSelects() const { return m_usePinselects; }
+    bool inferMissingTypes() const { return m_inferMissingTypes; }
 
     VFileLine* inFilelinep() const;		///< File/Line number for last callback
     void inFileline(const string& filename, int lineno) { m_inFilelinep = m_inFilelinep->create(filename, lineno); }

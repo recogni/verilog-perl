@@ -889,7 +889,8 @@ int VParseLex::lexToken(VParseBisonYYSType* yylvalp) {
 		    || prevtok == yWIRE
 		    || prevtok == yP_COLONCOLON) {
 		    if (m_aheadToken[0] == '[') {
-			for (int i=1; i<k_aheadLimit-1; i++) {
+			int i=1;
+			for (; i<k_aheadLimit-1; i++) {
 			    if ((i+1) >= m_aheadCount) {
 				m_aheadToken[m_aheadCount] = yylex();
 				m_aheadVal[m_aheadCount] = *s_yylvalp;
@@ -898,7 +899,10 @@ int VParseLex::lexToken(VParseBisonYYSType* yylvalp) {
 			    }
 
 			    if (m_aheadToken[i] == ']') {
-				if (m_aheadToken[i+1] == yaID__LEX) {
+				if (m_aheadToken[i+1] == '[') {
+				    continue;
+				}
+				else if (m_aheadToken[i+1] == yaID__LEX) {
 				    token = yaID__aTYPE;
 				}
 				break;

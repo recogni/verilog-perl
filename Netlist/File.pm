@@ -493,6 +493,7 @@ sub read {
 	  use_cb_operator => 0,
 	  use_cb_string => 0,
 	  use_cb_symbol => 0,
+	  infer_missing_types => $params{infer_missing_types},
 	  );
     return $fileref;
 }

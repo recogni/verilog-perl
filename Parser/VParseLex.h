@@ -77,9 +77,10 @@ class VParseLex {
     bool	m_inCellDefine;	///< In a `celldefine
 
     int		m_prevLexToken;		///< previous parsed token (for lexer)
-    bool	m_ahead;		///< aheadToken is valid
-    int		m_aheadToken;		///< Token we read ahead
-    VParseBisonYYSType m_aheadVal;	///< aheadToken's value
+    static const int k_aheadLimit = 100;
+    int		m_aheadCount;		///< aheadToken is valid
+    int		m_aheadToken[k_aheadLimit];	///< Token we read ahead
+    VParseBisonYYSType m_aheadVal[k_aheadLimit];	///< aheadToken's value
 
     int		m_pvstate;		///< "pure virtual" detection
 
@@ -96,7 +97,7 @@ class VParseLex {
 	m_parsep = parsep;
 	m_inCellDefine = false;
 	m_prevLexToken = 0;
-	m_ahead = false;
+	m_aheadCount = 0;
 	m_pvstate = 0;
 
 	m_yyState = yy_create_buffer(NULL, YY_BUF_SIZE);

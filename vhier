@@ -36,6 +36,7 @@ my $Opt_Modules;
 my $Opt_ModFiles;
 my $Opt_InFiles;
 my $Opt_Missing = 1;
+my $Opt_Missing_Files = 1;
 my $Opt_Missing_Modules;
 my $Opt_InferMissingTypes;
 my $Opt_TopModule;
@@ -65,6 +66,7 @@ if (! GetOptions (
 		  "sv!"			=> sub { shift; Verilog::Language::language_standard("1800-2017"); },
 		  "language=s"		=> sub { shift; Verilog::Language::language_standard(shift); },
 		  "missing!"		=> \$Opt_Missing,
+		  "missing-files!",	=> \$Opt_Missing_Files,
 		  "missing-modules!"	=> \$Opt_Missing_Modules,
 		  "infer-missing-types!"=> \$Opt_InferMissingTypes,
 		  "synthesis!"		=> \$Opt_Synthesis,
@@ -146,7 +148,9 @@ sub vhier {
     }
     foreach my $file (@files) {
 	print "   Reading $file\n" if $Debug;
-	$nl->read_file(filename=>$file, infer_missing_types=>$Opt_InferMissingTypes);
+	$nl->read_file(filename=>$file,
+		       error_self => !$Opt_Missing_Files ? 0:undef,
+		       infer_missing_types=>$Opt_InferMissingTypes);
     }
     # Read in any sub-modules
     $nl->link();

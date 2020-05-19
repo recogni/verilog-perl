@@ -36,7 +36,7 @@ my $Opt_Modules;
 my $Opt_ModFiles;
 my $Opt_InFiles;
 my $Opt_Missing = 1;
-my $Opt_Missing_Files = 1;
+my $Opt_Missing_Files;
 my $Opt_Missing_Modules;
 my $Opt_InferMissingTypes;
 my $Opt_TopModule;
@@ -149,7 +149,7 @@ sub vhier {
     foreach my $file (@files) {
 	print "   Reading $file\n" if $Debug;
 	$nl->read_file(filename=>$file,
-		       error_self => !$Opt_Missing_Files ? 0:undef,
+		       error_self => $Opt_Missing_Files ? 0:undef,
 		       infer_missing_types=>$Opt_InferMissingTypes);
     }
     # Read in any sub-modules

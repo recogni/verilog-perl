@@ -876,6 +876,10 @@ int VParseLex::lexToken(VParseBisonYYSType* yylvalp) {
 		LPARSEP->symPopScope(VAstType::PACKAGE);
 		token = yaID__aPACKAGE;
 	    }
+	    else if (m_aheadToken[0] == yaID__LEX && m_aheadToken[1] == '('
+		     && (prevtok == yFUNCTION__LEX || prevtok == yAUTOMATIC)) {
+		token = yaID__aTYPE;
+	    }
 	    else if ((m_aheadToken[0] == yaID__LEX && m_aheadToken[1] != '(') || m_aheadToken[0] == '[') {
 		if (prevtok == '('
 		    || prevtok == ','

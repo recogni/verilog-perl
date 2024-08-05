@@ -880,6 +880,10 @@ int VParseLex::lexToken(VParseBisonYYSType* yylvalp) {
 		     && (prevtok == yFUNCTION__LEX || prevtok == yAUTOMATIC)) {
 		token = yaID__aTYPE;
 	    }
+	    else if (m_aheadToken[0] == yaID__LEX && (m_aheadToken[1] == ',' || m_aheadToken[1] == ';')
+		     && prevtok == yaID__LEX) {
+		token = yaID__aTYPE;
+	    }
 	    else if ((m_aheadToken[0] == yaID__LEX && m_aheadToken[1] != '(') || m_aheadToken[0] == '[') {
 		if (prevtok == '('
 		    || prevtok == ','

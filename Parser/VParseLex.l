@@ -871,6 +871,8 @@ int VParseLex::lexToken(VParseBisonYYSType* yylvalp) {
 		*s_yylvalp = curValue;
 	    }
 
+	    // printf("%d %d %d %d %s\n", prevtok, token, m_aheadToken[0], m_aheadToken[1], s_yylvalp->str.c_str());
+
 	    if (m_aheadToken[0] == yP_COLONCOLON) {
 		LPARSEP->symPushNew(VAstType::PACKAGE, s_yylvalp->str);
 		LPARSEP->symPopScope(VAstType::PACKAGE);
@@ -881,7 +883,7 @@ int VParseLex::lexToken(VParseBisonYYSType* yylvalp) {
 		token = yaID__aTYPE;
 	    }
 	    else if (m_aheadToken[0] == yaID__LEX && (m_aheadToken[1] == ',' || m_aheadToken[1] == ';')
-		     && prevtok == yaID__LEX) {
+		     && (prevtok == yENDFUNCTION || prevtok == yaID__LEX)) {
 		token = yaID__aTYPE;
 	    }
 	    else if ((m_aheadToken[0] == yaID__LEX && m_aheadToken[1] != '(') || m_aheadToken[0] == '[') {

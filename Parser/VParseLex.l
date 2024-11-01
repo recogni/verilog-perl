@@ -879,7 +879,7 @@ int VParseLex::lexToken(VParseBisonYYSType* yylvalp) {
 		token = yaID__aPACKAGE;
 	    }
 	    else if (m_aheadToken[0] == yaID__LEX && m_aheadToken[1] == '('
-		     && (prevtok == yFUNCTION__LEX || prevtok == yAUTOMATIC)) {
+		     && (prevtok == yFUNCTION__LEX || prevtok == yAUTOMATIC || prevtok == yP_COLONCOLON)) {
 		token = yaID__aTYPE;
 	    }
 	    else if (m_aheadToken[0] == yaID__LEX && (m_aheadToken[1] == ',' || m_aheadToken[1] == ';')
